@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Apartments from "./Apartments";
@@ -7,6 +7,50 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function About() {
     const aboutRef = useRef(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined" || !aboutRef.current) return;
+
+        // Request idle time to cache all <img> sources so they appear instantly when sections scroll into view.
+        const preloadTargets = Array.from(aboutRef.current.querySelectorAll("img")).reduce(
+            (acc, img) => {
+                const src = img.getAttribute("src");
+                if (src) acc.add(src);
+                return acc;
+            },
+            new Set()
+        );
+
+        if (!preloadTargets.size) return;
+
+        const preloadedImages = [];
+
+        const startPreload = () => {
+            preloadTargets.forEach((src) => {
+                const image = new Image();
+                image.decoding = "async";
+                image.loading = "eager";
+                image.src = src;
+                preloadedImages.push(image);
+            });
+        };
+
+        let idleHandle;
+        if (typeof window.requestIdleCallback === "function") {
+            idleHandle = window.requestIdleCallback(startPreload, { timeout: 1500 });
+        } else {
+            idleHandle = window.setTimeout(startPreload, 300);
+        }
+
+        return () => {
+            if (typeof window.cancelIdleCallback === "function" && idleHandle) {
+                window.cancelIdleCallback(idleHandle);
+            } else if (idleHandle) {
+                window.clearTimeout(idleHandle);
+            }
+            preloadedImages.length = 0;
+        };
+    }, []);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -70,6 +114,12 @@ export function About() {
             (entries, obs) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const bgSrc = target.getAttribute("data-bg-src");
+                        if (bgSrc) {
+                            target.style.backgroundImage = `url('${bgSrc}')`;
+                            target.removeAttribute("data-bg-src");
+                        }
                         entry.target.classList.add("visible");
                         obs.unobserve(entry.target);
                     }
@@ -79,7 +129,7 @@ export function About() {
         );
 
         aboutRef.current
-            ?.querySelectorAll(".about-fade-text, .about-fade-img")
+            ?.querySelectorAll(".about-fade-text, .about-fade-img, .about-lazy-bg")
             .forEach((el) => observer.observe(el));
 
         const onLoad = () => ScrollTrigger.refresh();
@@ -107,14 +157,14 @@ export function About() {
                 </div>
                 </div>
                 <div className="about-image about-fade-img">
-                    <img src="/render-8.png" alt="Төслийн тухай" />
+                    <img src="/render-8.png" alt="Төслийн тухай" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
             </section>
             {/* --- 2 --- */}
             <section id="about-2" className="about-section about-alt">
 
                 <div className="about-image about-fade-img">
-                    <img src="/render-7.png" alt="Төслийн дэлгэрэнгүй" />
+                    <img src="/render-7.png" alt="Төслийн дэлгэрэнгүй" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
                 <div className="about-text about-fade-text">
                     <h2 className="about-heading-gold text-4xl md:text-5xl font-bold mb-6 leading-tight">Төслийн дэлгэрэнгүй</h2>
@@ -140,13 +190,17 @@ export function About() {
                     </ul>
                 </div>
                 <div className="about-image about-fade-img">
-                    <img src="/render-9.png" alt="Ээлж 1" />
+                    <img src="/render-9.png" alt="Ээлж 1" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
             </section>
 
             {/* --- 5 (KEEP) --- */}
             <section id="about-5" className="relative min-h-[100vh] flex items-center justify-center overflow-hidden text-white">
-                <div className="absolute inset-0 bg-cover bg-center about5-bg" style={{ backgroundImage: "url('/render-8.png')" }} />
+                <div
+                    className="absolute inset-0 bg-cover bg-center about5-bg about-lazy-bg"
+                    data-bg-src="/render-8.png"
+                    style={{ backgroundColor: "#0C6B73" }}
+                />
                 <div className="absolute inset-0 bg-black/60" />
                 <div className="relative z-10 grid md:grid-cols-2 gap-12 px-8 md:px-24 items-center">
                     <div className="text-center md:text-left">
@@ -185,7 +239,7 @@ export function About() {
                     </ul>
                 </div>
                 <div className="about-image about-fade-img">
-                    <img src="/render-7.png" alt="Building materials" />
+                    <img src="/render-7.png" alt="Building materials" loading="lazy" decoding="async" fetchPriority="low" />
                 </div>
             </section>
 
@@ -208,7 +262,7 @@ export function About() {
 
                     <div className="project-grid">
                         <div className="project-card">
-                            <img src="/projects/hcc.jpg" alt="HCC Himchan Center" />
+                            <img src="/projects/hcc.jpg" alt="HCC Himchan Center" loading="lazy" decoding="async" fetchPriority="low" />
                             <div className="project-body">
                                 <h4>HCC Himchan Center</h4>
                                 <p>Эмнэлэг болон үйлчилгээний зориулалттай барилга</p>
@@ -216,7 +270,7 @@ export function About() {
                         </div>
 
                         <div className="project-card">
-                            <img src="/projects/hairhan.jpg" alt="Хайрхан хотхон" />
+                            <img src="/projects/hairhan.jpg" alt="Хайрхан хотхон" loading="lazy" decoding="async" fetchPriority="low" />
                             <div className="project-body">
                                 <h4>“Хайрхан хотхон”</h4>
                                 <p>Орон сууцны цогцолбор</p>
@@ -229,7 +283,11 @@ export function About() {
 
             {/* --- 4 (KEEP) --- */}
             <section id="about-4" className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center about4-bg" style={{ backgroundImage: "url('/render-10.png')" }} />
+                <div
+                    className="absolute inset-0 bg-cover bg-center about4-bg about-lazy-bg"
+                    data-bg-src="/render-10.png"
+                    style={{ backgroundColor: "#0C6B73" }}
+                />
                 <div className="absolute inset-0 bg-black/50" />
                 <div className="relative z-10 text-center px-6">
                     <h2 className="about4-title about4-shine text-5xl md:text-6xl font-bold mb-6">Сөүл Өргөө - Таны ирээдүйн гэр</h2>
@@ -250,4 +308,3 @@ export function About() {
         </section>
     );
 }
-

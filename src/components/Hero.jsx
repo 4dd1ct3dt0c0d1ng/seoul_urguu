@@ -1,11 +1,28 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const HERO_IMAGE_SRC = "/render-6.png";
+
 export default function Hero() {
     const heroRef = useRef(null);
+
+    useEffect(() => {
+        if (typeof document === "undefined") return;
+
+        const preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "image";
+        preload.href = HERO_IMAGE_SRC;
+        preload.fetchPriority = "high";
+        document.head.appendChild(preload);
+
+        return () => {
+            preload.parentNode?.removeChild(preload);
+        };
+    }, []);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -39,8 +56,18 @@ export default function Hero() {
             className="panel hero relative flex items-center justify-center min-h-[100svh] w-full overflow-hidden"
         >
             {/* BACKGROUND LAYER */}
-            <div className="hero-bg absolute inset-0 bg-cover bg-center will-change-transform"
-                 style={{ backgroundImage: "url('/render-6.png')" }}></div>
+            <div className="hero-bg absolute inset-0 will-change-transform overflow-hidden pointer-events-none">
+                <img
+                    src={HERO_IMAGE_SRC}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover object-center select-none"
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                    aria-hidden="true"
+                    draggable={false}
+                />
+            </div>
 
             {/* OVERLAY GRADIENT */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 to-black/35" />

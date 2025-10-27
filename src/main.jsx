@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")).render(
             <ScrollToHash />
             <Routes>
                 <Route path="/" element={<><Hero /><About /></>} />
-                <Route path="apartments" element={<Apartments />} />
+                <Route path="apartments" element={<Apartments/>} />
                 <Route path="/apartments/:id" element={<ApartmentDetail />} />
             </Routes>
         </BrowserRouter>

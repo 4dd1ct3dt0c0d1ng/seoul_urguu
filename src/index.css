@@ -53,6 +53,7 @@ header.nav-collapsed {
     width: 100%;
     min-height: 100svh;
     overflow: hidden;
+
     background-position: center;
     background-size: cover;
 }

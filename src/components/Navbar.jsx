@@ -23,7 +23,7 @@ const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // ✅ drawer нээгдсэн үед body-г түгжих
+    // drawer нээгдсэн үед body-г түгжих
     useEffect(() => {
         document.body.style.overflow = open ? "hidden" : "auto";
     }, [open]);
@@ -33,13 +33,13 @@ const Navbar = () => {
     return (
         <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${collapsed ? 'nav-collapsed' : ''}`}>
             <nav className="container mx-auto flex justify-between items-center px-5 2xl:px-0 h-[72px]">
-                <a href="/" className="flex items-center gap-2">
+                <Link to="/" className="flex items-center gap-2">
                     <img src="/logo.svg" alt="logo" className="logo h-16 w-auto cursor-pointer hover:scale-105 transition-transform duration-300" />
-                </a>
+                </Link>
 
                 <ul className="nav-links hidden md:flex items-center gap-8">
-                    <li><a className="nav-ink" href="/">Нүүр</a></li>
-                    <li><a className="nav-ink" href="/apartments">Орон сууц</a></li>
+                    <li><Link className="nav-ink" to="/">Нүүр</Link></li>
+                    <li><Link className="nav-ink" to="/apartments">Орон сууц</Link></li>
                     <li><Link className="nav-ink" to="/#about-4">Холбоо барих</Link></li>
                 </ul>
 
@@ -75,8 +75,8 @@ const Navbar = () => {
                     </div>
 
                     <nav className="flex flex-col gap-4">
-                        <a className="mobile-link" href="/" onClick={closeMenu}>Нүүр</a>
-                        <a className="mobile-link" href="/Apartments" onClick={closeMenu}>Орон сууц</a>
+                        <Link className="mobile-link" to="/" onClick={closeMenu}>Нүүр</Link>
+                        <Link className="mobile-link" to="/apartments" onClick={closeMenu}>Орон сууц</Link>
                         <a className="mobile-link" href="#about-4" onClick={closeMenu}>Холбоо барих</a>
                     </nav>
 

@@ -53,6 +53,8 @@ export default function ApartmentDetail() {
                                 src={gallery[current]}
                                 alt={`${apt.name} зураг ${current + 1}`}
                                 className="w-full h-[420px] md:h-[520px] object-contain bg-[#f7fafb]"
+                                loading={current === 0 ? "eager" : "lazy"}
+                                decoding="async"
                             />
                             <button
                                 aria-label="Prev"
@@ -73,7 +75,13 @@ export default function ApartmentDetail() {
                                     onClick={() => setCurrent(i)}
                                     className={`rounded-xl overflow-hidden border ${i===current ? 'border-[#D89B1C]' : 'border-transparent'} bg-[#f7fafb]`}
                                 >
-                                    <img src={src} alt={`thumb ${i+1}`} className="w-full h-28 object-contain" />
+                                    <img
+                                        src={src}
+                                        alt={`thumb ${i+1}`}
+                                        className="w-full h-28 object-contain"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
                                 </button>
                             ))}
                         </div>
@@ -159,7 +167,13 @@ export default function ApartmentDetail() {
                             <div className="grid grid-cols-2 gap-3">
                                 {APARTMENTS.filter(a => a.id !== apt.id).slice(0, 2).map(r => (
                                     <Link key={r.id} to={`/apartments/${r.id}`} className="rounded-xl border p-3 hover:shadow">
-                                        <img src={r.img} alt={r.name} className="w-full h-28 object-contain bg-[#f7fafb] rounded-lg" />
+                                        <img
+                                            src={r.img}
+                                            alt={r.name}
+                                            className="w-full h-28 object-contain bg-[#f7fafb] rounded-lg"
+                                            loading="lazy"
+                                            decoding="async"
+                                        />
                                         <div className="mt-2 text-sm">
                                             <div className="font-semibold">{r.name}</div>
                                             <div className="text-[#D89B1C]">{r.size}</div>

@@ -17,7 +17,13 @@ export default function Apartments() {
                             to={`/apartments/${apt.id}`}
                             className="unit-card group focus:outline-none focus:ring-2 focus:ring-[#D89B1C]/60"
                         >
-                            <img src={apt.img} alt={apt.name} className="unit-image" loading="lazy" />
+                            <img
+                                src={apt.img}
+                                alt={apt.name}
+                                className="unit-image"
+                                loading="lazy"
+                                decoding="async"
+                            />
                             <div className="unit-body">
                                 <h3 className="unit-name">{apt.name}</h3>
                                 <p className="unit-size">{apt.size}</p>
